@@ -19,6 +19,8 @@ export type ArgumentsIsNotNullOrUndefinedReturnedType = (
     descriptor: PropertyDescriptor,
 ) => PropertyDescriptor;
 
+// TODO add check instanceOf
+
 /**
  *
  * @param methods
