@@ -19,4 +19,4 @@ export declare type ArgumentsIsNotNullOrUndefinedReturnedType = (target: object,
  * @EachArgument([Is.Not.Null, Is.Not.String])
  * @EachArgument([Is.Not.NullOrUndefined, [Is.Not.String, Is.Not.Number]])
  */
-export declare const EachArgument: (methods: Function | Function[], config?: IConfig | undefined) => ArgumentsIsNotNullOrUndefinedReturnedType;
+export declare const EachArgument: (methods: Function | Function[] | Function[][], config?: IConfig | undefined) => ArgumentsIsNotNullOrUndefinedReturnedType;

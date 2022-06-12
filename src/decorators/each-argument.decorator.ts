@@ -32,7 +32,7 @@ export type ArgumentsIsNotNullOrUndefinedReturnedType = (
  * @EachArgument([Is.Not.NullOrUndefined, [Is.Not.String, Is.Not.Number]])
  */
 export const EachArgument = (
-    methods: Function | Function[],
+    methods: Function | Function[] | Function[][],
     config?: IConfig
 ): ArgumentsIsNotNullOrUndefinedReturnedType => {
 
@@ -47,44 +47,34 @@ export const EachArgument = (
 
         descriptor.value = function (...args: any[]) {
 
-            let methodList: Function[] = methods as Function[];
-            let lastIndex: number = 0;
+            let result: boolean = true;
 
-            let result = args?.every((argument: any, index: number) => {
+            // TODO interface
+            const recursiveValidation = (method: typeof methods, argument: any, index: number): boolean => {
+                if (Array.isArray(method)) { // TODO change to Is.Array
+                    method = method[index] ?? method[method?.length - 1];
+                    return recursiveValidation(method, argument, index);
+                }
+                return method(argument);
+            };
 
-                lastIndex = index;
+            for (let index = 0; index < args?.length; index++) {
 
-                let method: Function = methods as Function;
+                const argument: any = args[index];
+                result = recursiveValidation(methods, argument, index);
 
-                if (Is.Array(methods)) {
-
-                    let foundMethod: Function | Function[] = methodList[index] ?? methodList[methodList?.length - 1];
-
-                    if (Is.Array(foundMethod)) {
-
-                        return (foundMethod as any).every((fun: any) => {
-
-                            return fun(argument);
-
-                        });
-
-                    }
-
-                    method = foundMethod;
-
+                if (Is.False(result)) {
+                    createErrorMessage(`Bad value for argument, index of argument "${index}" in ${String(propertyKey)}.`, configuration.typeOfError);
+                    break;
                 }
 
-                return method(argument);
+            }
 
-            });
-
-            if (result) {
+            if (Is.True(result)) {
 
                 return originalMethod.apply(this, args);
 
             }
-
-            createErrorMessage(`Bad value for argument, index of argument "${lastIndex}" in ${String(propertyKey)}.`, configuration.typeOfError);
 
         };
 
